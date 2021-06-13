@@ -2,13 +2,14 @@
     "name": "api-generator",
     "displayName": "api-generator",
     "description": "api生成器",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.57.0"
     },
     "categories": [
         "Other"
     ],
+    "icon": "out/static/plan.png",
     "activationEvents": [
         "onCommand:api-generator.helloWorld"
     ],
