@@ -1,0 +1,74 @@
+import axios from 'axios';
+
+let errorHandle = (status) => {
+    let map = {
+        400: '请求报文语法错误或参数错误(400)',
+        401: '需要通过HTTP认证，或认证失败(401)',
+        403: '请求资源被拒绝(403)',
+        404: '无法找到请求资源(404)',
+        408: '请求超时(408)',
+        500: '服务器故障或Web应用故障(500)',
+        501: '服务未实现(501)',
+        502: '网络错误(502)',
+        503: '服务器超负载或停机维护(503)',
+        504: '网络超时(504)',
+        505: 'HTTP版本不受支持(505)',
+    };
+    if (status) {
+        console.error(map[status] || `连接出错(${status})!`);
+        return;
+    }
+    console.error('请连接互联网！');
+};
+
+// axios.defaults.headers.post["Content-Type"] = "application/json";
+export const request = axios.create({
+    baseURL: process.env.VUE_APP_BASE_URL,
+    timeout: 6000,
+    validateStatus: function (status) {
+        // 网络层异常: 监听http错误码处理
+        if (!(status >= 200 && status < 300)) {
+            errorHandle(status);
+        }
+        return status >= 200 && status < 300;
+    },
+});
+
+request.interceptors.request.use(
+    (config) => {
+        let token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = 'Bearer ' + (token || '');
+        }
+        return config;
+    },
+    (error) => {
+        return error;
+    }
+);
+
+request.interceptors.response.use(
+    (response) => {
+        let { config, data } = response;
+        if (process.env.NODE_ENV === 'development') {
+            console.group(
+                `${config.method.toLocaleUpperCase()}接口: ${config.url}`
+            );
+            console.log(data);
+            console.groupEnd();
+        }
+        // 业务层异常
+        if (data.code !== 0) {
+            config.headers.notoast || console.error(data.msg);
+            return Promise.reject(data);
+        }
+        return data;
+    },
+    (error) => {
+        console.log('网络错误: ', error.message);
+        console.error(error.message);
+        return error;
+    }
+);
+
+export default request;
