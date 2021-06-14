@@ -5,7 +5,7 @@
 根据后端提供的接口文档,可以批量生成前端统一管理的请求代码
 
 目前仅支持 swagger 规范的 json 文件
-
+![https://iot.qiqin.work/demo.gif](https://iot.qiqin.work/demo.gif)
 示例代码
 ![https://iot.qiqin.work/code.png](https://iot.qiqin.work/code.png)
 
